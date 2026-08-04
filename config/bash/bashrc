@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # Only continue in interactive shells.
 case $- in
     *i*) ;;
@@ -20,15 +21,31 @@ alias grep='grep --color=auto'
 alias ls='ls --color=auto'
 
 if [[ -r /usr/share/bash-completion/bash_completion ]]; then
+
+    # shellcheck disable=SC1091
+
     source /usr/share/bash-completion/bash_completion
+
 fi
 
 if command -v fzf >/dev/null 2>&1; then
-    [[ -r /usr/share/doc/fzf/examples/key-bindings.bash ]] &&
+
+    if [[ -r /usr/share/doc/fzf/examples/key-bindings.bash ]]; then
+
+        # shellcheck disable=SC1091
+
         source /usr/share/doc/fzf/examples/key-bindings.bash
 
-    [[ -r /usr/share/doc/fzf/examples/completion.bash ]] &&
+    fi
+
+    if [[ -r /usr/share/doc/fzf/examples/completion.bash ]]; then
+
+        # shellcheck disable=SC1091
+
         source /usr/share/doc/fzf/examples/completion.bash
+
+    fi
+
 fi
 
 gpull() {
