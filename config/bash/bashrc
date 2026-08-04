@@ -1,0 +1,32 @@
+# Only continue in interactive shells.
+case $- in
+    *i*) ;;
+    *) return ;;
+esac
+
+HISTCONTROL=ignoreboth:erasedups
+HISTSIZE=10000
+HISTFILESIZE=20000
+HISTTIMEFORMAT='%F %T '
+
+shopt -s histappend
+PROMPT_COMMAND="history -a; history -n${PROMPT_COMMAND:+; $PROMPT_COMMAND}"
+
+export EDITOR=nano
+export VISUAL=nano
+
+alias less='less -R'
+alias grep='grep --color=auto'
+alias ls='ls --color=auto'
+
+if [[ -r /usr/share/bash-completion/bash_completion ]]; then
+    source /usr/share/bash-completion/bash_completion
+fi
+
+if command -v fzf >/dev/null 2>&1; then
+    [[ -r /usr/share/doc/fzf/examples/key-bindings.bash ]] &&
+        source /usr/share/doc/fzf/examples/key-bindings.bash
+
+    [[ -r /usr/share/doc/fzf/examples/completion.bash ]] &&
+        source /usr/share/doc/fzf/examples/completion.bash
+fi
