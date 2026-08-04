@@ -10,12 +10,9 @@ backup_file="${target_file}.previous"
 require_command sshd
 require_command systemctl
 
-config_changed=false
-
 if cmp -s "$source_file" "$target_file"; then
     log_info "SSH server configuration already current"
 else
-    config_changed=true
 
     if [[ -f "$target_file" ]]; then
         cp -p "$target_file" "$backup_file"
