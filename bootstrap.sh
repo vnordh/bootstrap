@@ -8,6 +8,8 @@ readonly SCRIPT_DIR
 # Load common functions
 # shellcheck source=lib/common.sh
 source "${SCRIPT_DIR}/lib/common.sh"
+require_root
+require_ubuntu
 
 log_info "Bootstrap starting"
 
