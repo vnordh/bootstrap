@@ -10,9 +10,33 @@ backup_file="${target_file}.previous"
 require_command sshd
 require_command systemctl
 
+config_changed=false
+
 if cmp -s "$source_file" "$target_file"; then
     log_info "SSH server configuration already current"
-    return 0
+else
+    config_changed=true
+
+    if [[ -f "$target_file" ]]; then
+        cp -p "$target_file" "$backup_file"
+    fi
+
+    install -o root -g root -m 0644 "$source_file" "$target_file"
+
+    if ! sshd -t; then
+        log_error "Invalid SSH configuration; restoring previous state"
+
+        if [[ -f "$backup_file" ]]; then
+            mv "$backup_file" "$target_file"
+        else
+            rm -f "$target_file"
+        fi
+
+        sshd -t || die "SSH configuration remains invalid after rollback"
+        die "SSH configuration was not installed"
+    fi
+
+    rm -f "$backup_file"
 fi
 
 if [[ -f "$target_file" ]]; then
