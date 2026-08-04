@@ -36,5 +36,19 @@ fi
 
 rm -f "$backup_file"
 
-systemctl reload ssh
-log_info "SSH server configured on ports 22 and 1122"
+if systemctl list-unit-files --type=socket --no-legend |
+    awk '{print $1}' |
+    grep -qx 'ssh.socket' &&
+   systemctl is-active --quiet ssh.socket; then
+
+    log_info "SSH uses systemd socket activation"
+
+    systemctl daemon-reload
+    systemctl restart ssh.socket
+else
+    log_info "SSH uses the traditional service"
+
+    systemctl reload-or-restart ssh.service
+fi
+
+log_info "SSH server configured"
