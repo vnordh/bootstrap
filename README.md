@@ -5,6 +5,68 @@ Personal Ubuntu server bootstrap framework.
 The goal is to build a reliable, repeatable, and idempotent way of configuring Ubuntu servers.
 
 ## Design principles
+## Design Principles
+
+The goal of this project is to provide a deterministic, idempotent bootstrap for Ubuntu servers. Running the bootstrap multiple times should always converge the system to the same desired state.
+
+### Configuration ownership
+
+The bootstrap follows these rules:
+
+- Never modify package-owned configuration files if a supported override mechanism exists.
+- Use drop-in configuration whenever supported (for example `sshd_config.d`, `systemd`, `sysctl.d`, etc.).
+- If no supported override mechanism exists, the bootstrap owns the configuration file and recreates it on every run.
+
+### Configuration management
+
+Configuration should be managed as complete files, not edited in place.
+
+Preferred workflow:
+
+1. Store the desired configuration under `config/`.
+2. Compare it with the installed version.
+3. Replace it atomically if different.
+4. Log whether the file was updated or already current.
+
+Avoid using `sed`, `awk`, or regular-expression replacements to modify existing configuration files unless there is no practical alternative.
+
+### Idempotency
+
+Every script must be idempotent.
+
+Running the bootstrap repeatedly should:
+
+- never duplicate configuration,
+- never produce errors because something already exists,
+- only make changes when the system differs from the desired state.
+
+### Small, focused scripts
+
+Each script should perform one logical task only.
+
+Naming convention:
+
+- `10-*` Base system
+- `20-*` Users and shell
+- `30-*` Networking
+- `40-*` Services
+- `50-*` Security
+- `60-*` Monitoring
+- `90-*` Personal preferences
+
+### Logging
+
+Scripts should clearly report what they are doing.
+
+Typical output should distinguish between:
+
+- configuration updated,
+- already current,
+- skipped,
+- warning,
+- error.
+
+This makes repeated runs easy to review and simplifies troubleshooting.
 
 - Small scripts with a single responsibility.
 - Idempotent – safe to run repeatedly.
