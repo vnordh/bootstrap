@@ -10,7 +10,6 @@ readonly DESIRED_KEYBOARD_MODEL="pc105"
 require_command locale-gen
 require_command update-locale
 require_command timedatectl
-require_command localectl
 
 if ! locale -a | grep -qi '^en_US\.utf8$'; then
     log_info "Generating locale ${DESIRED_LOCALE}"
@@ -19,8 +18,12 @@ else
     log_info "Locale ${DESIRED_LOCALE} already generated"
 fi
 
-current_locale="$(localectl status |
-    awk -F= '/System Locale/ {gsub(/^[[:space:]]+/, "", $2); print $2}')"
+current_locale="$(
+    awk -F= '/^LANG=/ {
+        gsub(/"/, "", $2)
+        print $2
+    }' /etc/default/locale 2>/dev/null
+)"
 
 if [[ "$current_locale" != "$DESIRED_LOCALE" ]]; then
     update-locale LANG="$DESIRED_LOCALE"
@@ -41,20 +44,24 @@ fi
 timedatectl set-ntp true
 log_info "Network time synchronization enabled"
 
-current_layout="$(localectl status |
-    awk -F: '/X11 Layout/ {gsub(/^[[:space:]]+/, "", $2); print $2}')"
+keyboard_file="/etc/default/keyboard"
 
-current_model="$(localectl status |
-    awk -F: '/X11 Model/ {gsub(/^[[:space:]]+/, "", $2); print $2}')"
+desired_keyboard_config="XKBMODEL=\"${DESIRED_KEYBOARD_MODEL}\"
+XKBLAYOUT=\"${DESIRED_KEYBOARD_LAYOUT}\"
+XKBVARIANT=\"\"
+XKBOPTIONS=\"\""
 
-if [[ "$current_layout" != "$DESIRED_KEYBOARD_LAYOUT" ||
-      "$current_model" != "$DESIRED_KEYBOARD_MODEL" ]]; then
-
-    localectl set-x11-keymap \
-        "$DESIRED_KEYBOARD_LAYOUT" \
-        "$DESIRED_KEYBOARD_MODEL"
-
-    log_info "Set keyboard layout to ${DESIRED_KEYBOARD_LAYOUT}"
-else
+if [[ -f "$keyboard_file" ]] &&
+   [[ "$(cat "$keyboard_file")" == "$desired_keyboard_config" ]]; then
     log_info "Keyboard layout already set to ${DESIRED_KEYBOARD_LAYOUT}"
+else
+    printf '%s\n' "$desired_keyboard_config" >"$keyboard_file"
+    log_info "Set keyboard layout to ${DESIRED_KEYBOARD_LAYOUT}"
+
+    if command -v setupcon >/dev/null 2>&1; then
+        setupcon
+        log_info "Applied console keyboard layout"
+    else
+        log_warn "setupcon not available; keyboard layout will apply after reboot"
+    fi
 fi
