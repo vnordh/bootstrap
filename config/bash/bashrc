@@ -69,6 +69,42 @@ gpush() {
     git push
 }
 
-# will expand to the matching history command and place it back on the command line without executing it
+###############################################################################
+
+# History
+
+###############################################################################
+
+HISTCONTROL=ignoreboth:erasedups
+
+HISTSIZE=10000
+
+HISTFILESIZE=20000
+
+HISTTIMEFORMAT='%F %T '
+
+PROMPT_COMMAND='history -a; history -n'
+
+# Expand history references such as !sudo, but require Enter before execution.
+
 shopt -s histverify
 
+###############################################################################
+
+# Editor and aliases
+
+###############################################################################
+
+export EDITOR='nano'
+
+export VISUAL='nano'
+
+alias less='less -R'
+
+alias grep='grep --color=auto'
+
+alias diff='diff --color=auto'
+
+alias ls='ls --color=auto'
+
+alias m='less'
