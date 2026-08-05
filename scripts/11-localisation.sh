@@ -44,6 +44,12 @@ fi
 timedatectl set-ntp true
 log_info "Network time synchronization enabled"
 
+if timedatectl show -p NTP --value | grep -qx yes; then
+    log_info "NTP service enabled"
+else
+    die "Failed to enable NTP"
+fi
+
 keyboard_file="/etc/default/keyboard"
 
 desired_keyboard_config="XKBMODEL=\"${DESIRED_KEYBOARD_MODEL}\"
