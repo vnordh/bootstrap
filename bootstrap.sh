@@ -5,6 +5,32 @@ set -Eeuo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly SCRIPT_DIR
 
+if [[ -f "$ENV_FILE" ]]; then
+
+    env_mode="$(stat -c '%a' "$ENV_FILE")"
+
+    if [[ "$env_mode" != "600" ]]; then
+
+        die "$ENV_FILE must have permissions 600; current mode is $env_mode"
+
+    fi
+
+    set -a
+
+    # shellcheck disable=SC1090
+
+    source "$ENV_FILE"
+
+    set +a
+
+    log_info "Loaded environment from $ENV_FILE"
+
+else
+
+    log_info "No .env file found; using built-in defaults"
+
+fi
+
 # Load common functions
 # shellcheck source=lib/common.sh
 source "${SCRIPT_DIR}/lib/common.sh"
