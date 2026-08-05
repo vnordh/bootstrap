@@ -2,10 +2,10 @@
 
 set -Eeuo pipefail
 
-readonly DESIRED_LOCALE="en_US.UTF-8"
-readonly DESIRED_TIMEZONE="Europe/Madrid"
-readonly DESIRED_KEYBOARD_LAYOUT="se"
-readonly DESIRED_KEYBOARD_MODEL="pc105"
+readonly DESIRED_LOCALE="${SYSTEM_LOCALE:-en_US.UTF-8}"
+readonly DESIRED_TIMEZONE="${SYSTEM_TIMEZONE:-Europe/Madrid}"
+readonly DESIRED_KEYBOARD_LAYOUT="${KEYBOARD_LAYOUT:-se}"
+readonly DESIRED_KEYBOARD_MODEL="${KEYBOARD_MODEL:-pc105}"
 
 require_command locale-gen
 require_command update-locale
