@@ -3,12 +3,12 @@
 set -Eeuo pipefail
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=lib/common.sh
+source "${SCRIPT_DIR}/lib/common.sh"
 
 ENV_FILE="${SCRIPT_DIR}/.env"
 
 # shellcheck disable=SC1091
-
-source "${SCRIPT_DIR}/lib/common.sh"
 
 if [[ -f "$ENV_FILE" ]]; then
 
@@ -39,7 +39,6 @@ fi
 
 # Load common functions
 # shellcheck source=lib/common.sh
-source "${SCRIPT_DIR}/lib/common.sh"
 require_root
 require_ubuntu
 
