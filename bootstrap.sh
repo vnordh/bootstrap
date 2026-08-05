@@ -8,6 +8,19 @@ source "${SCRIPT_DIR}/lib/common.sh"
 
 ENV_FILE="${SCRIPT_DIR}/.env"
 
+[[ -f "$ENV_FILE" ]] ||
+    die "Missing $ENV_FILE. Copy .env.example to .env and configure it."
+
+env_mode="$(stat -c '%a' "$ENV_FILE")"
+
+[[ "$env_mode" == "600" ]] ||
+    die "$ENV_FILE must have permissions 600; current mode is $env_mode"
+
+# shellcheck disable=SC1090
+source "$ENV_FILE"
+
+log_info "Loaded environment from $ENV_FILE"
+
 # shellcheck disable=SC1091
 
 if [[ -f "$ENV_FILE" ]]; then
