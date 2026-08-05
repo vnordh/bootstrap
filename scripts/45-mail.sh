@@ -93,6 +93,7 @@ printf '%s\n' \
     debconf-set-selections
 
 apt-get install -y \
+    bsd-mailx \
     ca-certificates \
     gettext-base \
     libsasl2-modules \
