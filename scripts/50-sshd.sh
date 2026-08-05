@@ -3,6 +3,7 @@
 set -Eeuo pipefail
 
 readonly SSH_PORT="${SSH_PORT:-1122}"
+readonly SSH_PORT_PLACEHOLDER="\${SSH_PORT}"
 
 source_file="${SCRIPT_DIR}/config/sshd/sshd.conf"
 target_file="/etc/ssh/sshd_config.d/20-bootstrap.conf"
@@ -27,13 +28,15 @@ fi
 
 template="$(<"$source_file")"
 
-if [[ "$template" != *"__SSH_PORT__"* ]]; then
-    die "Missing __SSH_PORT__ placeholder in $source_file"
+if [[ "$template" != *"$SSH_PORT_PLACEHOLDER"* ]]; then
+    die "Missing $SSH_PORT_PLACEHOLDER placeholder in $source_file"
 fi
 
-printf '%s\n' "${template//__SSH_PORT__/$SSH_PORT}" >"$rendered_file"
+printf '%s\n' \
+    "${template//$SSH_PORT_PLACEHOLDER/$SSH_PORT}" \
+    >"$rendered_file"
 
-if grep -q '__SSH_PORT__' "$rendered_file"; then
+if grep -Fq "$SSH_PORT_PLACEHOLDER" "$rendered_file"; then
     die "SSH configuration contains an unresolved placeholder"
 fi
 
