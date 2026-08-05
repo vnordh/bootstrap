@@ -1,0 +1,26 @@
+# Managed by vnordh/bootstrap
+
+compatibility_level = 3.6
+
+myhostname = ${MAIL_HOSTNAME}
+myorigin = /etc/mailname
+mydestination = $myhostname, localhost.localdomain, localhost
+
+inet_interfaces = loopback-only
+inet_protocols = all
+mynetworks = 127.0.0.0/8 [::1]/128
+
+alias_maps = hash:/etc/aliases
+alias_database = hash:/etc/aliases
+
+relayhost = [${MAIL_SMTP_HOST}]:${MAIL_SMTP_PORT}
+
+smtp_sasl_auth_enable = yes
+smtp_sasl_security_options = noanonymous
+smtp_sasl_password_maps = hash:/etc/postfix/sasl/passwd
+
+smtp_tls_security_level = encrypt
+smtp_tls_CAfile = /etc/ssl/certs/ca-certificates.crt
+
+mailbox_size_limit = 0
+recipient_delimiter = +

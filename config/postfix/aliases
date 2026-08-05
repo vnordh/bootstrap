@@ -1,0 +1,5 @@
+# Managed by vnordh/bootstrap
+
+postmaster: root
+root: ${MAIL_TO}
+${SUDO_USER}: ${MAIL_TO}
