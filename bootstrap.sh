@@ -2,8 +2,13 @@
 
 set -Eeuo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-readonly SCRIPT_DIR
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+
+ENV_FILE="${SCRIPT_DIR}/.env"
+
+# shellcheck disable=SC1091
+
+source "${SCRIPT_DIR}/lib/common.sh"
 
 if [[ -f "$ENV_FILE" ]]; then
 
@@ -30,6 +35,7 @@ else
     log_info "No .env file found; using built-in defaults"
 
 fi
+
 
 # Load common functions
 # shellcheck source=lib/common.sh
