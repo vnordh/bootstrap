@@ -5,7 +5,6 @@ set -Eeuo pipefail
 require_root
 require_command apt-get
 require_command apt-config
-require_command unattended-upgrade
 
 auto_source="${SCRIPT_DIR}/config/apt/auto-upgrades.conf"
 policy_source="${SCRIPT_DIR}/config/apt/unattended-upgrades.conf"
@@ -18,6 +17,7 @@ policy_target="/etc/apt/apt.conf.d/52-bootstrap-unattended-upgrades"
 
 log_info "Installing unattended-upgrades package"
 apt-get install -y unattended-upgrades
+require_command unattended-upgrade
 
 if cmp -s "$auto_source" "$auto_target"; then
     log_info "Automatic update schedule already current"
