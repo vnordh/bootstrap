@@ -2,23 +2,49 @@
 
 set -Eeuo pipefail
 
+readonly SSH_PORT="${SSH_PORT:-1122}"
+
 source_file="${SCRIPT_DIR}/config/sshd/sshd.conf"
 target_file="/etc/ssh/sshd_config.d/20-bootstrap.conf"
 backup_file="${target_file}.previous"
+rendered_file="$(mktemp)"
+
+cleanup() {
+    rm -f "$rendered_file"
+}
+
+trap cleanup EXIT
 
 [[ -f "$source_file" ]] || die "Missing $source_file"
+
 require_command sshd
 require_command systemctl
 
-if cmp -s "$source_file" "$target_file"; then
+if [[ ! "$SSH_PORT" =~ ^[0-9]+$ ]] ||
+   (( SSH_PORT < 1 || SSH_PORT > 65535 )); then
+    die "SSH_PORT must be a number from 1 to 65535; current value: $SSH_PORT"
+fi
+
+template="$(<"$source_file")"
+
+if [[ "$template" != *"__SSH_PORT__"* ]]; then
+    die "Missing __SSH_PORT__ placeholder in $source_file"
+fi
+
+printf '%s\n' "${template//__SSH_PORT__/$SSH_PORT}" >"$rendered_file"
+
+if grep -q '__SSH_PORT__' "$rendered_file"; then
+    die "SSH configuration contains an unresolved placeholder"
+fi
+
+if cmp -s "$rendered_file" "$target_file"; then
     log_info "SSH server configuration already current"
 else
-
     if [[ -f "$target_file" ]]; then
         cp -p "$target_file" "$backup_file"
     fi
 
-    install -o root -g root -m 0644 "$source_file" "$target_file"
+    install -o root -g root -m 0644 "$rendered_file" "$target_file"
 
     if ! sshd -t; then
         log_error "Invalid SSH configuration; restoring previous state"
@@ -34,6 +60,7 @@ else
     fi
 
     rm -f "$backup_file"
+    log_info "Set SSH port to $SSH_PORT"
 fi
 
 if systemctl list-unit-files --type=socket --no-legend |
