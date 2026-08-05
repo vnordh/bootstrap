@@ -69,3 +69,6 @@ gpush() {
     git push
 }
 
+# will expand to the matching history command and place it back on the command line without executing it
+shopt -s histverify
+
