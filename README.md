@@ -126,3 +126,16 @@ bootstrap/
 ## Status
 
 🚧 Early development.
+
+
+## Configuration
+
+The bootstrap works without a `.env` file by using built-in defaults.
+
+To customize a system:
+
+```bash
+cp .env.example .env
+chmod 600 .env
+nano .env
+sudo ./bootstrap.sh
