@@ -6,6 +6,7 @@ The project provisions a new Ubuntu installation into a consistent, repeatable b
 
 ## Features
 
+- Idempotent design
 - Baseline packages
 - Locale, timezone and keyboard configuration
 - Etckeeper
@@ -14,7 +15,6 @@ The project provisions a new Ubuntu installation into a consistent, repeatable b
 - SSH server configuration
 - Automatic security updates
 - Outbound mail notifications
-- Idempotent operation
 
 ## Tested platform
 
@@ -27,21 +27,45 @@ Expected to work, but not yet fully tested:
 - Ubuntu Server 22.04 LTS
 - Ubuntu Server 26.04 LTS
 
+## Repository layout
+
+```text
+bootstrap/
+├── bootstrap.sh
+├── README.md
+├── .env.example
+├── config/
+├── docs/
+├── hosts/
+├── lib/
+├── pre-setup/
+└── scripts/
+```
+
 ## Installation
 
 Clone the repository:
 
 ```bash
-git clone git@github.com:vnordh/bootstrap.git
+git clone https://github.com/vnordh/bootstrap.git
 cd bootstrap
 ```
 
-Create a machine-specific configuration if required:
+On systems that only provide a root account (for example Proxmox VE), run the optional pre-setup scripts first.
+
+```bash
+cd pre-setup
+sudo ./install-git.sh
+sudo ./create-user.sh
+```
+
+Then log in as the new user and continue:
 
 ```bash
 cp .env.example .env
 chmod 600 .env
 nano .env
+
 sudo ./bootstrap.sh
 ```
 
@@ -49,20 +73,9 @@ Re-running the bootstrap is supported and should only apply necessary changes.
 
 ## Configuration
 
-Defaults are built into the bootstrap.
+The bootstrap contains sensible defaults.
 
 Machine-specific settings are stored in `.env`.
-
-Common options include:
-
-- locale
-- timezone
-- keyboard layout
-- SSH port
-- automatic reboot policy
-- SMTP relay settings
-- notification recipient
-- server hostname
 
 See:
 
@@ -77,9 +90,9 @@ See:
 |12-etckeeper|Etckeeper|
 |20-shell|Bash configuration|
 |21-user-access|SSH authorized keys|
-|40-automatic-updates|Automatic updates|
-|45-mail|Postfix SMTP relay|
-|50-sshd|SSH server|
+|40-automatic-updates|Automatic security updates|
+|45-mail|Postfix SMTP relay and notifications|
+|50-sshd|SSH server configuration|
 
 ## Documentation
 
@@ -88,13 +101,14 @@ See:
 - `docs/development.md`
 - `docs/mail.md`
 - `docs/modules.md`
+- `pre-setup/README.md`
 
 ## Development
 
 Run ShellCheck before committing:
 
 ```bash
-shellcheck -x bootstrap.sh lib/common.sh scripts/*.sh
+shellcheck -x bootstrap.sh lib/common.sh scripts/*.sh pre-setup/*.sh
 ```
 
 Typical workflow:
@@ -109,6 +123,4 @@ gpush "Describe the change"
 
 The bootstrap is under development.
 
-It has been tested on Ubuntu Server 24.04 LTS and is intended to provide a repeatable, idempotent baseline for new servers.
-
-Compatibility with Ubuntu Server 22.04 LTS, Ubuntu Server 26.04 LTS, ARM-based Ubuntu systems and future platform-specific support remains to be validated.
+It has been tested on Ubuntu Server 24.04 LTS. Support for Ubuntu 22.04 LTS and Ubuntu 26.04 LTS is expected but not yet fully validated.
