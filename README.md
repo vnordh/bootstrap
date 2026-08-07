@@ -42,11 +42,6 @@ Create a machine-specific configuration if required:
 cp .env.example .env
 chmod 600 .env
 nano .env
-```
-
-Run the bootstrap:
-
-```bash
 sudo ./bootstrap.sh
 ```
 
@@ -93,7 +88,6 @@ See:
 - `docs/development.md`
 - `docs/mail.md`
 - `docs/modules.md`
-- `docs/roadmap.md`
 
 ## Development
 
