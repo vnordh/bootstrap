@@ -164,6 +164,13 @@ log_info "Administrative user '$username' is ready"
 
 printf '\nNext steps:\n\n'
 printf '    ssh %s@<server>\n' "$username"
-printf '    git clone https://github.com/vnordh/bootstrap.git\n'
-printf '    cd bootstrap\n'
-printf '    sudo ./bootstrap.sh\n\n'
+
+if command -v git >/dev/null 2>&1; then
+    printf '    git clone https://github.com/vnordh/bootstrap.git\n'
+    printf '    cd bootstrap\n'
+    printf '    sudo ./bootstrap.sh\n'
+else
+    printf '    Git is not installed. Run pre-setup/install-git.sh first.\n'
+fi
+
+printf '\n'
