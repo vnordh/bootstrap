@@ -54,6 +54,9 @@ cd bootstrap
 On systems that only provide a root account (for example Proxmox VE), run the optional pre-setup scripts first.
 
 ```bash
+To download the create-user.sh script:
+curl -fsSLO https://raw.githubusercontent.com/vnordh/bootstrap/main/pre-setup/create-user.sh && chmod 755 create-user.sh
+
 cd pre-setup
 sudo ./install-git.sh
 sudo ./create-user.sh

@@ -9,3 +9,7 @@ Current scripts:
 | Script | Purpose |
 |--------|---------|
 | create-user.sh | Create an administrative user on systems that only provide the root account (for example Proxmox VE). |
+
+To download and run on a new machine:
+curl -fsSLO https://raw.githubusercontent.com/vnordh/bootstrap/main/pre-setup/create-user.sh && chmod 755 create-user.sh
+
